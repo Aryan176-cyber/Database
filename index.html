@@ -1,199 +1,192 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>بررسی ویزا - دولت ایتالیا</title>
+  <meta charset="UTF-8">
+  <title>سامانه بررسی ویزا – دولت ایتالیا</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Tahoma', sans-serif;
-    }
-
+    /* ------------- RESET & BASE ------------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      margin: 0;
-      background-color: #f4f4f4;
+      font-family: 'Tahoma','Segoe UI', sans-serif;
       direction: rtl;
-      padding: 0;
-    }
-
-    header, footer {
-      background-color: #002b5c;
-      color: white;
       display: flex;
-      align-items: center;
-      padding: 10px 20px;
+      background: #f4f5f6;
+      height: 100vh;
+      overflow: hidden;
     }
+    a { color: inherit; text-decoration: none; }
 
-    header img, footer img {
-      height: 40px;
-      margin-left: 15px;
+    /* ------------- OVERLAY LOADING ------------- */
+    #overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(255,255,255,0.9); display: flex;
+      align-items: center; justify-content: center;
+      z-index: 100;
     }
+    #overlay img { width: 120px; }
 
-    header h1, footer p {
-      margin: 0;
-      font-size: 18px;
+    /* ------------- SIDEBAR ------------- */
+    .sidebar {
+      width: 200px; background: #003366; color: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; padding-top: 30px;
     }
+    .sidebar button {
+      width: 80%; margin: 10px 0; padding: 10px;
+      background: #0055a5; border: none; border-radius: 5px;
+      color: #fff; cursor: pointer; font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+    .sidebar button:hover { background: #0071c5; }
 
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background-color: white;
-      padding: 25px;
-      margin-top: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    /* ------------- MAIN CONTENT ------------- */
+    .main {
+      flex: 1; display: flex; flex-direction: column;
     }
+    header, footer {
+      background: #fff; padding: 15px 20px;
+      display: flex; align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    header img, footer img { height: 50px; margin-left: 15px; }
+    header h1 { font-size: 1.4rem; color: #003366; }
 
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 16px;
+    .content {
+      flex: 1; overflow-y: auto;
+      padding: 30px; display: flex; justify-content: center;
     }
-
-    button {
-      background-color: #003366;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
+    .form-box {
+      width: 100%; max-width: 480px;
+      background: #fff; padding: 30px;
+      border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
-    button:hover {
-      background-color: #0055aa;
+    .form-box input[type="text"],
+    .form-box input[type="file"] {
+      width: 100%; padding: 10px; margin: 12px 0;
+      border: 1px solid #ccc; border-radius: 4px;
+      font-size: 1rem;
     }
+    .form-box button {
+      width: 100%; padding: 12px;
+      background: #003366; color: #fff;
+      border: none; border-radius: 5px;
+      font-size: 1rem; cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    .form-box button:hover { background: #0055a5; }
 
     #message {
-      margin-top: 10px;
-      font-weight: bold;
+      text-align: center; margin-top: 20px;
+      font-size: 1.1rem;
+      color: #c00;
     }
-
-    #pdfContainer iframe {
-      width: 100%;
-      height: 400px;
-      margin-top: 15px;
-      border: 1px solid #ccc;
-    }
-
-    #downloadSection {
-      margin-top: 15px;
+    #downloadBtn {
       display: none;
-    }
-
-    @media screen and (max-width: 600px) {
-      header, footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      header img, footer img {
-        margin: 5px 0;
-      }
-
-      .container {
-        margin: 10px;
-      }
+      margin-top: 15px;
+      background: #007b00;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <img src="logo.png" alt="Italy Logo">
-    <h1>بررسی ویزا - جمهوری ایتالیا</h1>
-  </header>
-
-  <div class="container">
-    <input type="text" id="name" placeholder="نام">
-    <input type="text" id="lastname" placeholder="تخلص">
-    <input type="text" id="passport" placeholder="شماره پاسپورت">
-    <input type="text" id="clientNumber" placeholder="شماره کلاینت">
-    <button onclick="verifyUser()">بررسی اطلاعات</button>
-
-    <div id="passwordSection" style="display:none;">
-      <input type="password" id="passwordInput" placeholder="رمز برای دانلود فایل">
-      <button onclick="checkPassword()">تأیید رمز</button>
-    </div>
-
-    <div id="message"></div>
-
-    <div id="pdfContainer"></div>
-
-    <div id="downloadSection">
-      <button onclick="downloadPDF()">دانلود فایل PDF</button>
-    </div>
+  <!-- LOADING OVERLAY -->
+  <div id="overlay">
+    <img src="loading.gif" alt="در حال بارگذاری...">
   </div>
 
-  <footer>
-    <img src="logo.png" alt="Italy Logo">
-    <p>© دولت جمهوری ایتالیا - تمام حقوق محفوظ است</p>
-  </footer>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button onclick="document.getElementById('passportFile').click()">آپلود پاسپورت</button>
+    <button onclick="document.getElementById('photoFile').click()">آپلود تصویر</button>
+    <button onclick="document.getElementById('submitBtn').click()">بررسی اطلاعات</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header>
+      <img src="logo.png" alt="لوگو">
+      <h1>سامانه بررسی ویزا</h1>
+    </header>
+
+    <div class="content">
+      <div class="form-box" id="formBox">
+        <input type="text" id="name" placeholder="نام" required>
+        <input type="text" id="lastname" placeholder="تخلص" required>
+        <input type="text" id="passportNumber" placeholder="شماره پاسپورت" required>
+        <input type="text" id="clientNumber" placeholder="شماره کلاینت" required>
+        <input type="file" id="passportFile" style="display:none">
+        <input type="file" id="photoFile" style="display:none">
+        <button id="submitBtn">ثبت و بررسی</button>
+        <div id="message"></div>
+        <button id="downloadBtn">دانلود فایل PDF</button>
+      </div>
+    </div>
+
+    <footer>
+      <img src="logo.png" alt="لوگو">
+    </footer>
+  </div>
+
 
   <script>
-    let userMatched = null;
+    // --- 1. Overlay on load ---
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('overlay').style.display = 'none';
+      }, 2500);
+    });
 
-    async function verifyUser() {
-      const name = document.getElementById("name").value.trim();
-      const lastname = document.getElementById("lastname").value.trim();
-      const passport = document.getElementById("passport").value.trim();
-      const clientNumber = document.getElementById("clientNumber").value.trim();
-      const msg = document.getElementById("message");
-      msg.innerHTML = "";
+    // --- 2. بارگذاری data.json ---
+    let users = [];
+    fetch('data.json')
+      .then(r => r.json())
+      .then(j => users = j)
+      .catch(e => console.error('خطا در بارگذاری JSON:', e));
 
-      try {
-        msg.innerHTML = "<img src='loading.gif' alt='Loading' width='30'> در حال بررسی...";
-        const response = await fetch("data.json");
-        const users = await response.json();
+    // --- 3. درگاه بررسی ---
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      const msg = document.getElementById('message');
+      const dl = document.getElementById('downloadBtn');
+      msg.textContent = '';
+      dl.style.display = 'none';
 
-        userMatched = users.find(u =>
-          u.name === name &&
-          u.lastname === lastname &&
-          u.passport === passport &&
-          u.clientNumber === clientNumber
+      // آماده‌سازی داده کاربر
+      const input = {
+        name: document.getElementById('name').value.trim(),
+        lastname: document.getElementById('lastname').value.trim(),
+        passport: document.getElementById('passportNumber').value.trim(),
+        clientNumber: document.getElementById('clientNumber').value.trim()
+      };
+
+      // نمایش loading
+      document.getElementById('overlay').style.display = 'flex';
+
+      setTimeout(() => {
+        document.getElementById('overlay').style.display = 'none';
+
+        // مقایسه
+        const found = users.find(u =>
+          u.name === input.name &&
+          u.lastname === input.lastname &&
+          u.passport === input.passport &&
+          u.clientNumber === input.clientNumber
         );
 
-        setTimeout(() => {
-          if (userMatched) {
-            document.getElementById("passwordSection").style.display = "block";
-            msg.style.color = "green";
-            msg.innerHTML = "کاربر یافت شد. لطفاً رمز را وارد کنید.";
-          } else {
-            msg.style.color = "red";
-            msg.innerHTML = "هیچ کاربری با این مشخصات یافت نشد.";
-          }
-        }, 3000);
+        if (found) {
+          // موفقیت → دکمه دانلود و باز کردن PDF
+          dl.style.display = 'block';
+          dl.onclick = () => window.open(found.pdfLink, '_blank');
+          msg.style.color = '#007b00';
+          msg.textContent = 'اطلاعات معتبر است، برای دانلود کلیک کنید.';
+        } else {
+          msg.style.color = '#c00';
+          msg.textContent = 'اطلاعات مطابقت ندارد!';
+        }
 
-      } catch (err) {
-        console.error("خطا در دریافت data.json:", err);
-        msg.style.color = "red";
-        msg.innerHTML = "خطا در ارتباط با سرور.";
-      }
-    }
-
-    function checkPassword() {
-      const inputPass = document.getElementById("passwordInput").value.trim();
-      const msg = document.getElementById("message");
-
-      if (userMatched && inputPass === userMatched.pdfPassword) {
-        document.getElementById("pdfContainer").innerHTML =
-          <iframe src="${userMatched.pdfLink}"></iframe>;
-        document.getElementById("downloadSection").style.display = "block";
-        msg.style.color = "green";
-        msg.innerHTML = "رمز صحیح است. فایل نمایش داده شد.";
-      } else {
-        msg.style.color = "red";
-        msg.innerHTML = "رمز اشتباه است!";
-      }
-    }
-
-    function downloadPDF() {
-      if (userMatched) {
-        window.open(userMatched.pdfLink, "_blank");
-      }
-    }
+      }, 3000);
+    });
   </script>
+
 </body>
 </html>
