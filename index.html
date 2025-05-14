@@ -2,15 +2,16 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>ورود به حساب</title>
+  <title>ورود بدون رمز</title>
   <style>
     body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; direction: rtl; }
     label, input { display: block; margin: 10px 0; width: 100%; }
     iframe { margin-top: 20px; border: 1px solid #ccc; }
+    #result { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h2>ورود بدون رمز</h2>
+  <h2>ورود به حساب</h2>
   <form id="loginForm">
     <label>اسم:<input type="text" name="fname" required></label>
     <label>تخلص:<input type="text" name="lname" required></label>
@@ -35,19 +36,31 @@
         protocol: form.protocol.value.trim()
       };
 
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwK9Ug6j7a7a2eiaJ2jpShGl46JgumSr6dW8BGP_FCcRQJrpaVox6Ss-YUye9ertu0/exec", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      console.log("در حال ارسال داده‌ها:", data);
 
-      const result = await response.json();
-      if (result.success) {
-        document.getElementById('result').innerHTML = `
-          <h3>فایل شما:</h3>
-          <iframe src="${result.fileUrl.replace('/view?usp=sharing', '/preview')}" width="100%" height="600"></iframe>
-        `;
-      } else {
-        document.getElementById('result').innerHTML = "<p style='color:red;'>اطلاعات شما اشتباه است یا یافت نشد.</p>";
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwK9Ug6j7a7a2eiaJ2jpShGl46JgumSr6dW8BGP_FCcRQJrpaVox6Ss-YUye9ertu0/exec", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        const result = await response.json();
+        console.log("پاسخ سرور:", result);
+
+        if (result.success) {
+          document.getElementById('result').innerHTML = `
+            <h3>فایل شما:</h3>
+            <iframe src="${result.fileUrl.replace('/view?usp=sharing', '/preview')}" width="100%" height="600"></iframe>
+          `;
+        } else {
+          document.getElementById('result').innerHTML = "<p style='color:red;'>اطلاعات شما اشتباه است یا یافت نشد.</p>";
+        }
+      } catch (error) {
+        console.error("خطا در ارتباط با سرور:", error);
+        document.getElementById('result').innerHTML = "<p style='color:red;'>خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.</p>";
       }
     });
   </script>
